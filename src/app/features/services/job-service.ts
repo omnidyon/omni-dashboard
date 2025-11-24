@@ -1,16 +1,17 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Job } from '../models/job.mode';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class JobService {
   private http = inject(HttpClient);
-  private _jobs = signal<Job[]>([]); // Fixed: renamed to _jobs
-  private apiUrl = 'https://your-nest-backend.com/api/jobs';
+  private _jobs = signal<Job[]>([]);
+  
+  private apiUrl = `${environment.apiUrl}/jobs`;
 
-  // Public read-only signal
   jobs = this._jobs.asReadonly();
 
   async loadJobs(): Promise<void> {
@@ -35,7 +36,11 @@ export class JobService {
 
   async updateJobStatus(id: string, status: Job['status']): Promise<Job | null> {
     try {
-      const updatedJob = await this.http.patch<Job>(`${this.apiUrl}/${id}`, { status }).toPromise();
+      const updatedJob = await this.http.patch<Job>(
+        `${this.apiUrl}/${id}/status`, 
+        { status }
+      ).toPromise();
+      
       if (updatedJob) {
         this._jobs.update(jobs => 
           jobs.map(job => job.id === id ? updatedJob : job)

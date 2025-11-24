@@ -94,22 +94,16 @@
       border: 1px solid rgba(249, 33, 186, 0.3);
     }
 
-    &.applied {
+    &.processed {
       background: rgba(30, 221, 183, 0.2);
       color: var(--success-color);
       border: 1px solid rgba(30, 221, 183, 0.3);
     }
 
-    &.rejected {
+    &.ignored {
       background: rgba(250, 128, 114, 0.2);
       color: var(--error-color);
       border: 1px solid rgba(250, 128, 114, 0.3);
-    }
-
-    &.archived {
-      background: rgba(161, 161, 170, 0.2);
-      color: var(--text-secondary);
-      border: 1px solid rgba(161, 161, 170, 0.3);
     }
   }
 }
