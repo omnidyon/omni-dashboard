@@ -6,7 +6,6 @@
 <div class="job-detail-container">
   <header class="job-header">
     <h1>{{ job()!.title }}</h1>
-
     <div class="job-actions">
       <select [value]="job()!.status" (change)="updateStatus($any($event.target).value)">
         <option value="NEW">New</option>
@@ -18,26 +17,30 @@
   </header>
 
   <div class="job-content">
-    <!-- Job Preview Panel -->
+    <!-- Preview Panel -->
     <div class="preview-panel">
       <h2>Job Preview</h2>
-      <div class="iframe-container">
-        @if (sanitizedJobUrl()) {
-        <iframe
-          [src]="sanitizedJobUrl()!"
-          width="100%"
-          height="600"
-          sandbox="allow-same-origin allow-forms allow-scripts allow-popups"
-          referrerpolicy="no-referrer"
-          title="Job Preview"
-        ></iframe>
-        }
+      <div class="preview-fallback">
+        <div class="fallback-content">
+          <div class="fallback-icon">🔗</div>
+          <h3>External Job Link</h3>
+          <p>This job is hosted on {{ job()!.source | uppercase }}</p>
+          <a [href]="job()!.link" target="_blank" class="external-link">
+            Open Job on {{ job()!.source | uppercase }}
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- Proposal Panel -->
     <div class="proposal-panel">
-      <h2>AI Generated Proposal</h2>
+      <div class="proposal-header">
+        <h2>AI Generated Proposal</h2>
+        <button class="copy-btn" (click)="copyProposal()" title="Copy proposal to clipboard">
+          Copy
+        </button>
+      </div>
+      
       <div class="proposal-content">
         <pre>{{ job()!.proposal }}</pre>
       </div>
@@ -45,7 +48,7 @@
       <div class="job-meta">
         <div class="meta-item">
           <strong>Source:</strong>
-          <span class="source-badge">{{ job()!.source | uppercase }}</span>
+          <span class="source">{{ job()!.source | uppercase }}</span>
         </div>
 
         <div class="meta-item">
@@ -61,8 +64,12 @@
 
         <div class="meta-item">
           <strong>Posted:</strong>
-          <span>{{ job()!.createdAt | date : 'medium' }}</span>
+          <span>{{ job()!.createdAt | date:'medium' }}</span>
         </div>
+      </div>
+
+      <div class="panel-footer">
+        <button class="delete-btn" (click)="deleteJob()">Delete Job</button>
       </div>
     </div>
   </div>

@@ -1,7 +1,6 @@
 import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SafeResourceUrl } from '@angular/platform-browser';
-import { SanitizerService } from '../../../core/services/sanitizer-service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Job } from '../../models/job.mode';
 import { JobService } from '../../services/job-service';
 import { DatePipe, UpperCasePipe } from '@angular/common';
@@ -17,7 +16,7 @@ export class JobDetail implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   protected router = inject(Router);
   private jobService = inject(JobService);
-  private sanitizerService = inject(SanitizerService);
+  private sanitizer = inject(DomSanitizer);
 
   job = signal<Job | null>(null);
   sanitizedJobUrl = signal<SafeResourceUrl | null>(null);
@@ -36,9 +35,9 @@ export class JobDetail implements OnInit, OnDestroy {
     const job = await this.jobService.getJob(id);
     if (job) {
       this.job.set(job);
-      this.sanitizedJobUrl.set(this.sanitizerService.sanitizeJobUrl(job.link));
+      // Use direct link since proxy doesn't work
+      this.sanitizedJobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl('about:blank'));
     } else {
-      // Handle job not found - maybe redirect to list
       this.router.navigate(['/']);
     }
 
@@ -55,8 +54,40 @@ export class JobDetail implements OnInit, OnDestroy {
     }
   }
 
+  async copyProposal() {
+    const currentJob = this.job();
+    if (!currentJob?.proposal) return;
+
+    try {
+      await navigator.clipboard.writeText(currentJob.proposal);
+      console.log('Proposal copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy proposal:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = currentJob.proposal;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  }
+
+  async deleteJob() {
+    const currentJob = this.job();
+    if (!currentJob) return;
+
+    if (confirm('Are you sure you want to delete this job?')) {
+      const success = await this.jobService.deleteJob(currentJob.id);
+      if (success) {
+        this.router.navigate(['/']);
+      } else {
+        alert('Failed to delete job');
+      }
+    }
+  }
+
   ngOnDestroy() {
-    // Clean up iframe
-    this.sanitizedJobUrl.set(this.sanitizerService.sanitizeJobUrl('about:blank'));
+    this.sanitizedJobUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl('about:blank'));
   }
 }

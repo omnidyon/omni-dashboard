@@ -4,12 +4,12 @@ import { Job } from '../models/job.mode';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JobService {
   private http = inject(HttpClient);
   private _jobs = signal<Job[]>([]);
-  
+
   private apiUrl = `${environment.apiUrl}/jobs`;
 
   jobs = this._jobs.asReadonly();
@@ -27,7 +27,7 @@ export class JobService {
 
   async getJob(id: string): Promise<Job | null> {
     try {
-      return await this.http.get<Job>(`${this.apiUrl}/${id}`).toPromise() || null;
+      return (await this.http.get<Job>(`${this.apiUrl}/${id}`).toPromise()) || null;
     } catch (error) {
       console.error('Failed to load job:', error);
       return null;
@@ -36,21 +36,31 @@ export class JobService {
 
   async updateJobStatus(id: string, status: Job['status']): Promise<Job | null> {
     try {
-      const updatedJob = await this.http.patch<Job>(
-        `${this.apiUrl}/${id}/status`, 
-        { status }
-      ).toPromise();
-      
+      const updatedJob = await this.http
+        .patch<Job>(`${this.apiUrl}/${id}/status`, { status })
+        .toPromise();
+
       if (updatedJob) {
-        this._jobs.update(jobs => 
-          jobs.map(job => job.id === id ? updatedJob : job)
-        );
+        this._jobs.update((jobs) => jobs.map((job) => (job.id === id ? updatedJob : job)));
         return updatedJob;
       }
       return null;
     } catch (error) {
       console.error('Failed to update job status:', error);
       return null;
+    }
+  }
+
+  async deleteJob(id: string): Promise<boolean> {
+    try {
+      await this.http.delete(`${this.apiUrl}/${id}`).toPromise();
+
+      // Remove from local state
+      this._jobs.update((jobs) => jobs.filter((job) => job.id !== id));
+      return true;
+    } catch (error) {
+      console.error('Failed to delete job:', error);
+      return false;
     }
   }
 }
