@@ -1,0 +1,144 @@
+.jobs-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.jobs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  h1 {
+    color: var(--text-primary);
+    font-size: 28px;
+    font-weight: 700;
+  }
+}
+
+.filters select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  }
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 16px;
+}
+
+.job-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-purple);
+  }
+}
+
+.job-title {
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  span {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .source-tag {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--primary-purple);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+
+  .budget-tag {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--accent-blue);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+
+  .status-tag {
+    &.new {
+      background: rgba(249, 33, 186, 0.2);
+      color: var(--primary-pink);
+      border: 1px solid rgba(249, 33, 186, 0.3);
+    }
+
+    &.applied {
+      background: rgba(30, 221, 183, 0.2);
+      color: var(--success-color);
+      border: 1px solid rgba(30, 221, 183, 0.3);
+    }
+
+    &.rejected {
+      background: rgba(250, 128, 114, 0.2);
+      color: var(--error-color);
+      border: 1px solid rgba(250, 128, 114, 0.3);
+    }
+
+    &.archived {
+      background: rgba(161, 161, 170, 0.2);
+      color: var(--text-secondary);
+      border: 1px solid rgba(161, 161, 170, 0.3);
+    }
+  }
+}
+
+.created-at {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+
+  p {
+    font-size: 16px;
+  }
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+
+  p {
+    color: var(--text-secondary);
+    font-size: 16px;
+  }
+}

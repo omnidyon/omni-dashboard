@@ -1,0 +1,50 @@
+<div class="jobs-container">
+  <header class="jobs-header">
+    <h1>Job Applications</h1>
+    
+    <div class="filters">
+      <select [value]="statusFilter()" (change)="onStatusFilterChange($event)">
+        <option value="ALL">All Jobs</option>
+        <option value="NEW">New</option>
+        <option value="APPLIED">Applied</option>
+        <option value="REJECTED">Rejected</option>
+        <option value="ARCHIVED">Archived</option>
+      </select>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <div class="loading-state">
+      <p>Loading jobs...</p>
+    </div>
+  } @else {
+    <div class="jobs-grid">
+      @for (job of filteredJobs(); track job.id) {
+        <div class="job-card" (click)="viewJobDetails(job.id)">
+          <h3 class="job-title">{{ job.title }}</h3>
+          
+          <div class="job-meta">
+            <span class="source-tag">{{ job.source | uppercase }}</span>
+            
+            @if (job.budget) {
+              <span class="budget-tag">
+                {{ job.budget }} {{ job.currency }} 
+                {{ job.hourly ? '/hr' : 'fixed' }}
+              </span>
+            }
+            
+            <span class="status-tag" [class]="job.status.toLowerCase()">
+              {{ job.status }}
+            </span>
+          </div>
+          
+          <p class="created-at">{{ job.createdAt | date:'medium' }}</p>
+        </div>
+      } @empty {
+        <div class="empty-state">
+          <p>No jobs found matching your criteria</p>
+        </div>
+      }
+    </div>
+  }
+</div>

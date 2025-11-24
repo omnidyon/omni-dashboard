@@ -1,0 +1,75 @@
+@if (isLoading()) {
+<div class="loading-state">
+  <p>Loading job details...</p>
+</div>
+} @else if (job()) {
+<div class="job-detail-container">
+  <header class="job-header">
+    <h1>{{ job()!.title }}</h1>
+
+    <div class="job-actions">
+      <select [value]="job()!.status" (change)="updateStatus($any($event.target).value)">
+        <option value="NEW">New</option>
+        <option value="APPLIED">Applied</option>
+        <option value="REJECTED">Rejected</option>
+        <option value="ARCHIVED">Archived</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="job-content">
+    <!-- Job Preview Panel -->
+    <div class="preview-panel">
+      <h2>Job Preview</h2>
+      <div class="iframe-container">
+        @if (sanitizedJobUrl()) {
+        <iframe
+          [src]="sanitizedJobUrl()!"
+          width="100%"
+          height="600"
+          sandbox="allow-same-origin allow-forms allow-scripts allow-popups"
+          referrerpolicy="no-referrer"
+          title="Job Preview"
+        ></iframe>
+        }
+      </div>
+    </div>
+
+    <!-- Proposal Panel -->
+    <div class="proposal-panel">
+      <h2>AI Generated Proposal</h2>
+      <div class="proposal-content">
+        <pre>{{ job()!.proposal }}</pre>
+      </div>
+
+      <div class="job-meta">
+        <div class="meta-item">
+          <strong>Source:</strong>
+          <span class="source-badge">{{ job()!.source | uppercase }}</span>
+        </div>
+
+        <div class="meta-item">
+          <strong>Budget:</strong>
+          @if (job()!.budget) {
+          <span>
+            {{ job()!.budget }} {{ job()!.currency }} ({{ job()!.hourly ? 'hourly' : 'fixed' }})
+          </span>
+          } @else {
+          <span>Not specified</span>
+          }
+        </div>
+
+        <div class="meta-item">
+          <strong>Posted:</strong>
+          <span>{{ job()!.createdAt | date : 'medium' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+} @else {
+<div class="error-state">
+  <p>Job not found</p>
+  <button (click)="router.navigate(['/'])">Back to Jobs</button>
+</div>
+}
